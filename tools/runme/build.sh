@@ -279,6 +279,29 @@ _upload_artifacts_to_storage() {
   _add_to_description \
     '* **HDInsight**: Copy the link to %s to setup this build on a cluster.\n' \
     "[this Script Action]($STORAGE_URL/$MML_VERSION/install-mmlspark.sh)"
+  portal_link() {
+    local url="$STORAGE_URL/$MML_VERSION/$1"
+    url="${url//\//%2F}"; url="${url//:/%3A}"; url="${url//+/%2B}"
+    url="https://portal.azure.com/#create/Microsoft.Template/uri/$url"
+    printf "([in the portal](%s))" "$url"
+  }
+  _add_to_description \
+    '* **ARM Template**: Use %s to setup a cluster with a gpu %s.\n' \
+    "[this ARM Template]($STORAGE_URL/$MML_VERSION/deploy-main-template.json)" \
+    "$(portal_link "deploy-main-template.json")"
+  _add_to_description \
+    '  - **HDI Sub-Template**: Use the %s for just the hdi deployment %s.\n' \
+    "[HDI sub-template]($STORAGE_URL/$MML_VERSION/spark-cluster-template.json)" \
+    "$(portal_link "spark-cluster-template.json")"
+  _add_to_description \
+    '  - **GPU VM Sub-Template**: Use the %s for just the gpu vm deployment %s.\n' \
+    "[GPU sub-template]($STORAGE_URL/$MML_VERSION/gpu-vm-template.json)" \
+    "$(portal_link "gpu-vm-template.json")"
+  _add_to_description \
+    '  - **Convenient Deployment Script**: Download %s, create a %s, and run as\n%s\n' \
+    "[this script]($STORAGE_URL/$MML_VERSION/deploy-arm.sh)" \
+    "paramers file [based on this template]($STORAGE_URL/$MML_VERSION/deploy-parameters.template)" \
+    "        ./deploy-arm.sh ... -p <your-parameters>"
 }
 
 _full_build() {
